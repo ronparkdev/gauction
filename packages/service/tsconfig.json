@@ -1,0 +1,22 @@
+{
+  "extends": "./tsconfig.path.json",
+  "include": [
+    "src",
+    "config-overrides.js"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+  "compilerOptions": {
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "noEmit": true,
+    "jsx": "react-jsx"
+  },
+  "files": [
+    "types.d.ts"
+  ]
+}
