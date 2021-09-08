@@ -1,15 +1,17 @@
 .app {
   height: 100vh;
+  overflow: auto;
   width: 100vw;
 }
 
 .map {
+  float: left;
   height: 100%;
-  width: calc(100% - 200px);
+  width: calc(100% - 250px);
 }
 
 .controller {
-  background-color: red;
+  float: right;
   height: 100%;
-  width: 200px;
+  width: 250px;
 }

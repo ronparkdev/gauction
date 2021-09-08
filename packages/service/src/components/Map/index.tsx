@@ -76,5 +76,5 @@ export default pipeHOC(
   scriptLoader(
     `//dapi.kakao.com/v2/maps/sdk.js?appkey=${KakaoMapConstants.SERVICE_MAP_KEY}&libraries=services&autoload=false`,
   ),
-  styling(require('./Map.scss')),
+  styling(require('./Map.module.scss')),
 )
