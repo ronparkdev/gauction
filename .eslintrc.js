@@ -9,7 +9,7 @@ module.exports = {
     ecmaVersion: 12,
     sourceType: 'module',
   },
-  plugins: ['@typescript-eslint', 'import', 'react'],
+  plugins: ['@typescript-eslint', 'import', 'react', 'react-hooks'],
   rules: {
     'require-jsdoc': 'off',
 
@@ -33,6 +33,13 @@ module.exports = {
           },
         ],
         pathGroupsExcludedImportTypes: ['builtin'],
+      },
+    ],
+    'react-hooks/rules-of-hooks': 'error',
+    'react-hooks/exhaustive-deps': [
+      'warn',
+      {
+        additionalHooks: 'useRecoilCallback',
       },
     ],
   },

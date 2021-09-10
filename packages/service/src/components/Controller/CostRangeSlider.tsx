@@ -1,26 +1,42 @@
 import { Label, RangeSlider } from '@blueprintjs/core'
-import React, { useState } from 'react'
+import React, { useCallback, useMemo } from 'react'
+import { useRecoilState } from 'recoil'
 
+import { FilterRangeState, getDefaultFilterRange } from 'service/stores/atoms/filterState'
+import { filterRangeStateSelector } from 'service/stores/selector/filterRangeStateSelector'
 import { StringUtils } from 'service/utils/string'
 
 interface OwnProps {
-  min: number
-  max: number
-  title?: string
-  valueKey?: string
+  title: string
+  filterKey: keyof FilterRangeState
 }
 
-export const CostRangeSlider: React.FC<OwnProps> = ({ title, min, max }: OwnProps) => {
-  const [cost, setCost] = useState<[number, number]>([min, max + 1])
+type Props = OwnProps
+
+const CostRangeSlider: React.FC<Props> = ({ title, filterKey }: Props) => {
+  const [range, setRange] = useRecoilState(filterRangeStateSelector(filterKey))
+
+  const rangeLimit = useMemo(() => getDefaultFilterRange(filterKey), [filterKey])
+
+  const value: [number, number] = useMemo(() => {
+    return [range.min, range.max <= rangeLimit.max ? range.max : rangeLimit.max + 1]
+  }, [range, rangeLimit])
+
+  const handleChangeValue = useCallback(
+    ([min, max]) => {
+      setRange({ min, max: max <= rangeLimit.max ? max : Number.MAX_SAFE_INTEGER })
+    },
+    [rangeLimit, setRange],
+  )
 
   return (
     <Label>
       {title}
       <RangeSlider
-        min={min}
-        max={max + 1}
+        min={rangeLimit.min}
+        max={rangeLimit.max + 1}
         labelRenderer={(value) => {
-          if (max < value) {
+          if (rangeLimit.max < value) {
             return '∞'
           }
           const quotient = Math.floor(value / 10_000)
@@ -30,11 +46,13 @@ export const CostRangeSlider: React.FC<OwnProps> = ({ title, min, max }: OwnProp
           }
           return `${StringUtils.withComma(remainder)}`
         }}
-        value={cost}
-        onChange={setCost}
-        labelStepSize={max - min}
+        value={value}
+        onChange={handleChangeValue}
+        labelStepSize={rangeLimit.max - rangeLimit.min}
         stepSize={100}
       />
     </Label>
   )
 }
+
+export default CostRangeSlider
