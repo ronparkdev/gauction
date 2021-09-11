@@ -6,8 +6,9 @@ import SizeUnit from 'service/types/sizeUnit'
 import pipeHOC from 'service/utils/hoc/pipeHOC'
 import { StylingProps, styling } from 'service/utils/hoc/styling'
 
+import ProductTypeSelector from './ProductTypeSelector'
 import CostRangeSlider from './RangeSlider'
-import { SizeUnitSwitch } from './SizeUnitSwitch'
+import SizeUnitSwitch from './SizeUnitSwitch'
 
 interface OwnProps extends StylingProps {}
 
@@ -24,6 +25,7 @@ const Controller: React.FC<OwnProps> = ({ cx }: OwnProps) => {
         stepSize={10}
         titleRight={<SizeUnitSwitch />}
       />
+      <ProductTypeSelector />
     </div>
   )
 }

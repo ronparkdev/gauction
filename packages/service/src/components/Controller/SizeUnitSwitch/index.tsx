@@ -5,7 +5,7 @@ import { useRecoilState } from 'recoil'
 import { configSizeUnitState } from 'service/stores/atoms/configState'
 import SizeUnit from 'service/types/sizeUnit'
 
-export const SizeUnitSwitch = () => {
+const SizeUnitSwitch = () => {
   const [sizeUnit, setSizeUnit] = useRecoilState(configSizeUnitState)
 
   return (
@@ -22,3 +22,5 @@ export const SizeUnitSwitch = () => {
     />
   )
 }
+
+export default SizeUnitSwitch

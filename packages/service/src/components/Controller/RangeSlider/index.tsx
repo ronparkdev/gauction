@@ -15,9 +15,7 @@ interface OwnProps extends StylingProps {
   filterKey: keyof FilterRangeState
 }
 
-type Props = OwnProps
-
-const RangeSlider: React.FC<Props> = ({ cx, title, titleRight, stepSize, filterKey }: Props) => {
+const RangeSlider = ({ cx, title, titleRight, stepSize, filterKey }: OwnProps) => {
   const [range, setRange] = useRecoilState(filterRangeStateSelector(filterKey))
 
   const rangeLimit = useMemo(() => getDefaultFilterRange(filterKey), [filterKey])
@@ -28,9 +26,18 @@ const RangeSlider: React.FC<Props> = ({ cx, title, titleRight, stepSize, filterK
 
   const handleChangeValue = useCallback(
     ([min, max]) => {
-      setRange({ min, max: max <= rangeLimit.max ? max : Number.MAX_SAFE_INTEGER })
+      const adjustedMin = Math.max(rangeLimit.min, min - (min % stepSize))
+      const adjustedMax =
+        max > rangeLimit.max
+          ? Number.MAX_SAFE_INTEGER
+          : Math.max(rangeLimit.min, Math.min(rangeLimit.max, max - (max % stepSize)))
+
+      setRange({
+        min: adjustedMin,
+        max: adjustedMax,
+      })
     },
-    [rangeLimit, setRange],
+    [rangeLimit, stepSize, setRange],
   )
 
   return (
@@ -46,12 +53,7 @@ const RangeSlider: React.FC<Props> = ({ cx, title, titleRight, stepSize, filterK
           if (rangeLimit.max < value) {
             return '∞'
           }
-          const quotient = Math.floor(value / 10_000)
-          const remainder = value % 10_000
-          if (quotient > 0) {
-            return `${StringUtils.withComma(quotient)}억${remainder > 0 ? ` ${StringUtils.withComma(remainder)}` : ''}`
-          }
-          return `${StringUtils.withComma(remainder)}`
+          return StringUtils.getReadablePrice(value)
         }}
         value={value}
         onChange={handleChangeValue}
