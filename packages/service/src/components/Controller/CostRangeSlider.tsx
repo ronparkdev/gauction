@@ -8,12 +8,13 @@ import { StringUtils } from 'service/utils/string'
 
 interface OwnProps {
   title: string
+  stepSize: number
   filterKey: keyof FilterRangeState
 }
 
 type Props = OwnProps
 
-const CostRangeSlider: React.FC<Props> = ({ title, filterKey }: Props) => {
+const CostRangeSlider: React.FC<Props> = ({ title, stepSize, filterKey }: Props) => {
   const [range, setRange] = useRecoilState(filterRangeStateSelector(filterKey))
 
   const rangeLimit = useMemo(() => getDefaultFilterRange(filterKey), [filterKey])
@@ -49,7 +50,7 @@ const CostRangeSlider: React.FC<Props> = ({ title, filterKey }: Props) => {
         value={value}
         onChange={handleChangeValue}
         labelStepSize={rangeLimit.max - rangeLimit.min}
-        stepSize={100}
+        stepSize={stepSize}
       />
     </Label>
   )

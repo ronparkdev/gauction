@@ -1,9 +1,11 @@
 import throttle from 'lodash/throttle'
 import React, { useCallback, useEffect, useRef } from 'react'
 import scriptLoader, { ScriptLoaderProps } from 'react-script-loader-hoc'
+import { useRecoilState } from 'recoil'
 
 import { KakaoMapConstants } from 'share/constants/KakaoMap'
 
+import { filterRangeState } from 'service/stores/atoms/filterState'
 import pipeHOC from 'service/utils/hoc/pipeHOC'
 import { styling, StylingProps } from 'service/utils/hoc/styling'
 
@@ -13,9 +15,12 @@ import { MapUtils } from './utils'
 interface OwnProps extends ScriptLoaderProps, StylingProps {}
 
 const Map: React.FC<OwnProps> = ({ cx, scriptsLoadedSuccessfully }: OwnProps) => {
+  const [filter] = useRecoilState(filterRangeState)
+
   const ref = useRef<HTMLDivElement>(null)
   const mapRef = useRef<any>(null)
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const writeStateWithThrottle = useCallback(
     throttle(() => {
       const map = mapRef.current
@@ -31,14 +36,15 @@ const Map: React.FC<OwnProps> = ({ cx, scriptsLoadedSuccessfully }: OwnProps) =>
     [mapRef],
   )
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const updateMarkerWithThrottle = useCallback(
     throttle(() => {
       const map = mapRef.current
       if (map) {
-        MapUtils.updateMarker(map)
+        MapUtils.updateMarker(map, filter)
       }
     }, 500),
-    [mapRef],
+    [mapRef, filter],
   )
 
   useEffect(() => {

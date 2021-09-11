@@ -10,8 +10,9 @@ interface OwnProps extends StylingProps {}
 const Controller: React.FC<OwnProps> = ({ cx }: OwnProps) => {
   return (
     <div className={cx('root')}>
-      <CostRangeSlider title={'현재 금액'} filterKey={'currentPrice'} />
-      <CostRangeSlider title={'평단가'} filterKey={'pricePerArea'} />
+      <CostRangeSlider title={'감정 금액'} filterKey={'appraisedPrice'} stepSize={100} />
+      <CostRangeSlider title={'현재 금액'} filterKey={'lowPrice'} stepSize={100} />
+      <CostRangeSlider title={'평단가'} filterKey={'pricePerArea'} stepSize={10} />
     </div>
   )
 }

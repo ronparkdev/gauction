@@ -2,6 +2,8 @@
 import mapRawData from 'share/data/20210831.json'
 import { ListItem } from 'share/types/listItem'
 
+import { FilterRangeState } from 'service/stores/atoms/filterState'
+
 import { MapState } from './state'
 
 const getKakaoMapLibrary = () => (window as any).kakao.maps
@@ -32,15 +34,17 @@ const updateMarker = (() => {
   const itemMap: { [key in string]: ListItem } = mapRawData
   const markerMap: { [key in string]: any } = {}
 
-  return (map) => {
+  return (map, filter: FilterRangeState) => {
     if (!isInitialized) {
       const KakaoMap = getKakaoMapLibrary()
+
+      const invalidKeys: string[] = []
 
       Object.keys(itemMap).forEach((key) => {
         const item = itemMap[key]
 
         if (!item || !item.geo || markerMap[key]) {
-          console.error('no item', key)
+          invalidKeys.push(key)
           return
         }
 
@@ -53,6 +57,8 @@ const updateMarker = (() => {
 
         markerMap[key] = marker
       })
+
+      console.error('invalid keys', invalidKeys)
 
       isInitialized = true
     }
@@ -73,11 +79,19 @@ const updateMarker = (() => {
         return
       }
 
+      const pricePerArea = item.lowPrice / item.groundSize
+
       const isVisible =
         startLatitude <= item.geo.latitude &&
-        item.geo.latitude <= endLatitude &&
+        endLatitude >= item.geo.latitude &&
         startLongitude <= item.geo.longitude &&
-        item.geo.longitude <= endLongitude
+        endLongitude >= item.geo.longitude &&
+        filter.appraisedPrice.min <= item.appraisedPrice / 10_000 &&
+        filter.appraisedPrice.max >= item.appraisedPrice / 10_000 &&
+        filter.lowPrice.min <= item.lowPrice / 10_000 &&
+        filter.lowPrice.max >= item.lowPrice / 10_000 &&
+        filter.pricePerArea.min <= pricePerArea / 10_000 &&
+        filter.pricePerArea.max >= pricePerArea / 10_000
 
       marker.setMap(isVisible ? map : null)
     })
