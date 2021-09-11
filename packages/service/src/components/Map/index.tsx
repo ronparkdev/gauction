@@ -5,7 +5,7 @@ import { useRecoilState } from 'recoil'
 
 import { KakaoMapConstants } from 'share/constants/KakaoMap'
 
-import { filterRangeState } from 'service/stores/atoms/filterState'
+import { FilterRangeState, filterRangeState } from 'service/stores/atoms/filterState'
 import pipeHOC from 'service/utils/hoc/pipeHOC'
 import { styling, StylingProps } from 'service/utils/hoc/styling'
 
@@ -17,10 +17,10 @@ interface OwnProps extends ScriptLoaderProps, StylingProps {}
 const Map: React.FC<OwnProps> = ({ cx, scriptsLoadedSuccessfully }: OwnProps) => {
   const [filter] = useRecoilState(filterRangeState)
 
+  const filterRef = useRef<FilterRangeState>(filter)
   const ref = useRef<HTMLDivElement>(null)
   const mapRef = useRef<any>(null)
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const writeStateWithThrottle = useCallback(() => {
     const map = mapRef.current
     if (map) {
@@ -38,11 +38,16 @@ const Map: React.FC<OwnProps> = ({ cx, scriptsLoadedSuccessfully }: OwnProps) =>
     throttle(() => {
       const map = mapRef.current
       if (map) {
-        MapUtils.updateMarker(map, filter)
+        MapUtils.updateMarker(map, filterRef.current)
       }
     }, 1000),
-    [mapRef, filter],
+    [mapRef],
   )
+
+  useEffect(() => {
+    filterRef.current = filter
+    updateMarkerWithThrottle()
+  }, [filter, updateMarkerWithThrottle])
 
   useEffect(() => {
     const container = ref.current
