@@ -3,7 +3,7 @@ import React from 'react'
 import pipeHOC from 'service/utils/hoc/pipeHOC'
 import { StylingProps, styling } from 'service/utils/hoc/styling'
 
-import CostRangeSlider from './CostRangeSlider'
+import CostRangeSlider from './RangeSlider'
 
 interface OwnProps extends StylingProps {}
 

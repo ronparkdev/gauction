@@ -1,20 +1,23 @@
-import { Label, RangeSlider } from '@blueprintjs/core'
-import React, { useCallback, useMemo } from 'react'
+import { Label, RangeSlider as BPJRangeSlider } from '@blueprintjs/core'
+import React, { ReactNode, useCallback, useMemo } from 'react'
 import { useRecoilState } from 'recoil'
 
 import { FilterRangeState, getDefaultFilterRange } from 'service/stores/atoms/filterState'
 import { filterRangeStateSelector } from 'service/stores/selector/filterRangeStateSelector'
+import pipeHOC from 'service/utils/hoc/pipeHOC'
+import { styling, StylingProps } from 'service/utils/hoc/styling'
 import { StringUtils } from 'service/utils/string'
 
-interface OwnProps {
-  title: string
+interface OwnProps extends StylingProps {
+  title: ReactNode
+  titleRight?: ReactNode
   stepSize: number
   filterKey: keyof FilterRangeState
 }
 
 type Props = OwnProps
 
-const CostRangeSlider: React.FC<Props> = ({ title, stepSize, filterKey }: Props) => {
+const RangeSlider: React.FC<Props> = ({ cx, title, titleRight, stepSize, filterKey }: Props) => {
   const [range, setRange] = useRecoilState(filterRangeStateSelector(filterKey))
 
   const rangeLimit = useMemo(() => getDefaultFilterRange(filterKey), [filterKey])
@@ -32,8 +35,11 @@ const CostRangeSlider: React.FC<Props> = ({ title, stepSize, filterKey }: Props)
 
   return (
     <Label>
-      {title}
-      <RangeSlider
+      <div className={cx('title')}>
+        <div>{title}</div>
+        <div>{titleRight}</div>
+      </div>
+      <BPJRangeSlider
         min={rangeLimit.min}
         max={rangeLimit.max + 1}
         labelRenderer={(value) => {
@@ -56,4 +62,4 @@ const CostRangeSlider: React.FC<Props> = ({ title, stepSize, filterKey }: Props)
   )
 }
 
-export default CostRangeSlider
+export default pipeHOC(RangeSlider, styling(require('./RangeSlider.module.scss')))
