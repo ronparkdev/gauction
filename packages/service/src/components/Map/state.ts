@@ -1,3 +1,5 @@
+import { LocalStorage } from 'service/stores/permanent/localStorage'
+
 const STATE_KEY = 'lastMapState'
 
 export interface MapState {
@@ -6,20 +8,14 @@ export interface MapState {
   level: number
 }
 
-const read = (): MapState => {
-  const valueStr = localStorage.getItem(STATE_KEY)
-  const value = valueStr && JSON.parse(valueStr)
-  const defaultValue: MapState = {
-    latitude: 33.450701,
-    longitude: 126.570667,
-    level: 3,
-  }
-
-  return value || defaultValue
+const DEFAULT_MAP_STATE = {
+  latitude: 33.450701,
+  longitude: 126.570667,
+  level: 3,
 }
 
-const write = (state: MapState) => {
-  localStorage.setItem(STATE_KEY, JSON.stringify(state))
-}
+const read = (): MapState => (LocalStorage.get(STATE_KEY) as MapState) || DEFAULT_MAP_STATE
+
+const write = (state: MapState) => LocalStorage.set(STATE_KEY, state)
 
 export const MapState = { read, write }

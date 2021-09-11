@@ -2,6 +2,7 @@ import { atom } from 'recoil'
 
 import { PRODUCT_TYPES } from 'service/types/productType'
 import { Range } from 'service/types/range'
+import { localForageEffect } from 'service/utils/recoil-effect/localForage'
 
 export interface FilterRangeState {
   appraisedPrice: Range
@@ -36,9 +37,11 @@ export const filterRangeState = atom<FilterRangeState>({
     lowPrice: getDefaultFilterRange('lowPrice'),
     pricePerArea: getDefaultFilterRange('pricePerArea'),
   },
+  effects_UNSTABLE: [localForageEffect('filterRangeState')],
 })
 
 export const filterProductTypesState = atom<string[]>({
   key: 'filterProductTypesState',
   default: PRODUCT_TYPES,
+  effects_UNSTABLE: [localForageEffect('filterProductTypesState')],
 })

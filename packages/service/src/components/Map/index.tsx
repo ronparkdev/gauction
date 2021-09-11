@@ -21,20 +21,17 @@ const Map: React.FC<OwnProps> = ({ cx, scriptsLoadedSuccessfully }: OwnProps) =>
   const mapRef = useRef<any>(null)
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const writeStateWithThrottle = useCallback(
-    throttle(() => {
-      const map = mapRef.current
-      if (map) {
-        const state = {
-          latitude: map.getCenter().getLat(),
-          longitude: map.getCenter().getLng(),
-          level: map.getLevel(),
-        }
-        MapState.write(state)
+  const writeStateWithThrottle = useCallback(() => {
+    const map = mapRef.current
+    if (map) {
+      const state = {
+        latitude: map.getCenter().getLat(),
+        longitude: map.getCenter().getLng(),
+        level: map.getLevel(),
       }
-    }, 300),
-    [mapRef],
-  )
+      MapState.write(state)
+    }
+  }, [mapRef])
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const updateMarkerWithThrottle = useCallback(
@@ -43,7 +40,7 @@ const Map: React.FC<OwnProps> = ({ cx, scriptsLoadedSuccessfully }: OwnProps) =>
       if (map) {
         MapUtils.updateMarker(map, filter)
       }
-    }, 500),
+    }, 1000),
     [mapRef, filter],
   )
 
