@@ -79,6 +79,7 @@ const getCachedInfoWindow = (() => {
 const createMarkerMap = (kakaoMap) => {
   const KakaoMap = getKakaoMapLibrary()
   const itemMap = getItemMap()
+  const pinnedKeys = new Set<string>()
 
   return Object.keys(itemMap).reduce((map, key) => {
     const item = itemMap[key]
@@ -100,7 +101,16 @@ const createMarkerMap = (kakaoMap) => {
     })
     KakaoMap.event.addListener(marker, 'mouseout', () => {
       console.log(key, 'mouseout')
-      getCachedInfoWindow(key).close()
+      if (!pinnedKeys.has(key)) {
+        getCachedInfoWindow(key).close()
+      }
+    })
+    KakaoMap.event.addListener(marker, 'click', () => {
+      if (pinnedKeys.has(key)) {
+        pinnedKeys.delete(key)
+      } else {
+        pinnedKeys.add(key)
+      }
     })
 
     map[key] = marker
