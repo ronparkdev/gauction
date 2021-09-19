@@ -1,4 +1,4 @@
-import { writeList } from './services/naver/listWriter'
+import { writeList } from './services/tank/listWriter'
 
 const crawling = async () => {
   await writeList()
