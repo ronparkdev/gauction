@@ -8,9 +8,12 @@ import { getGeo } from '../kakaoMap/geocoderAPI'
 import { createListReceiver } from './listAPI'
 
 export const writeList = async () => {
-  const filePath = `../share/data/tank-${moment().format('YYYYMMDD')}.json`
+  const dirPath = '../share/data/'
+  const filePath = `${dirPath}tank-${moment().format('YYYYMMDD')}.json`
 
   const itemMap: { [key: string]: ListItem } = (await fs.pathExists(filePath)) ? await fs.readJson(filePath) : {}
+
+  await fs.mkdirp(dirPath)
 
   const writeItemMap = async () => fs.writeJSON(filePath, itemMap)
 
