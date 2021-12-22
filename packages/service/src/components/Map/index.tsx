@@ -40,7 +40,7 @@ const Map: React.FC<OwnProps> = ({ cx, scriptsLoadedSuccessfully }: OwnProps) =>
       if (map) {
         MapUtils.updateMarker(map, filterRef.current)
       }
-    }, 1000),
+    }, 100),
     [mapRef],
   )
 
