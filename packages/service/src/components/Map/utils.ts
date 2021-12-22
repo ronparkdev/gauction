@@ -1,14 +1,12 @@
 /* eslint-disable no-unused-vars */
-import mapRawData from 'share/data/20210831.json'
 import { ListItem } from 'share/types/listItem'
 
+import MapItemDataSource from 'service/datasources/mapItem'
 import { FilterRangeState } from 'service/stores/atoms/filterState'
 
 import { MapState } from './state'
 
 const getKakaoMapLibrary = () => (window as any).kakao.maps
-
-const getItemMap = (): { [key in string]: ListItem } => mapRawData
 
 const createKakaoMap = (container) => {
   const KakaoMap = getKakaoMapLibrary()
@@ -27,6 +25,8 @@ const createKakaoMap = (container) => {
 
   const zoomControl = new KakaoMap.ZoomControl()
   map.addControl(zoomControl, KakaoMap.ControlPosition.RIGHT)
+
+  MapItemDataSource.load()
 
   return map
 }
@@ -76,93 +76,71 @@ const getCachedInfoWindow = (() => {
   }
 })()
 
-const createMarkerMap = (kakaoMap) => {
-  const KakaoMap = getKakaoMapLibrary()
-  const itemMap = getItemMap()
-  const pinnedKeys = new Set<string>()
+const marker = (() => {
+  const cachedMarkerMap = {}
 
-  return Object.keys(itemMap).reduce((map, key) => {
-    const item = itemMap[key]
-
-    if (!item || !item.geo || map[key]) {
-      return map
+  const getOrCreateMarker = (item: ListItem) => {
+    const cached = cachedMarkerMap[item.editionNo]
+    if (cached) {
+      return cached
     }
 
-    const position = new KakaoMap.LatLng(item.geo.latitude, item.geo.longitude)
+    if (!item.geo) {
+      return null
+    }
 
-    const marker = new KakaoMap.Marker({
+    const KakaoMap = getKakaoMapLibrary()
+    const position = new KakaoMap.LatLng(item.geo.latitude, item.geo.longitude)
+    return (cachedMarkerMap[item.editionNo] = new KakaoMap.Marker({
       position,
       clickable: true,
-    })
+    }))
+  }
 
-    KakaoMap.event.addListener(marker, 'mouseover', () => {
-      console.log(key, 'mouseover')
-      getCachedInfoWindow(key).open(kakaoMap, marker)
-    })
-    KakaoMap.event.addListener(marker, 'mouseout', () => {
-      console.log(key, 'mouseout')
-      if (!pinnedKeys.has(key)) {
-        getCachedInfoWindow(key).close()
-      }
-    })
-    KakaoMap.event.addListener(marker, 'click', () => {
-      if (pinnedKeys.has(key)) {
-        pinnedKeys.delete(key)
-      } else {
-        pinnedKeys.add(key)
-      }
-    })
+  const draw = (kakaoMap, itemOrKey: string | ListItem) => {
+    if (typeof itemOrKey === 'string') {
+      const key = itemOrKey
+      return cachedMarkerMap[key] || null
+    } else {
+      const marker = getOrCreateMarker(itemOrKey)
+      marker?.setMap(kakaoMap)
+      return marker
+    }
+  }
 
-    map[key] = marker
-    return map
-  }, {})
-}
+  const clear = (excludeKeys: string[] = []) => {
+    Object.keys(cachedMarkerMap)
+      .filter((key) => !excludeKeys.includes(key))
+      .map((key) => cachedMarkerMap[key])
+      .forEach((marker) => marker.setMap(null))
+  }
 
-const updateMarker = (() => {
-  let cachedMarkerMap: { [key in string]: any }
-  const itemMap = getItemMap()
-
-  return (kakaoMap, filter: FilterRangeState) => {
-    const markerMap = cachedMarkerMap || (() => (cachedMarkerMap = createMarkerMap(kakaoMap)))()
-
+  const update = async (kakaoMap, filter: FilterRangeState) => {
     const bounds = kakaoMap.getBounds()
-    const swLatLng = bounds.getSouthWest()
-    const neLatLng = bounds.getNorthEast()
 
-    const startLatitude = swLatLng.getLat()
-    const endLatitude = neLatLng.getLat()
-
-    const startLongitude = swLatLng.getLng()
-    const endLongitude = neLatLng.getLng()
-
-    Object.keys(itemMap).forEach((key) => {
-      const item = itemMap[key]
-      const marker = markerMap[key]
-      if (!item || !item.geo || !marker) {
-        return
-      }
-
-      const pricePerArea = item.lowPrice / item.groundSize
-
-      const isVisible =
-        startLatitude <= item.geo.latitude &&
-        endLatitude >= item.geo.latitude &&
-        startLongitude <= item.geo.longitude &&
-        endLongitude >= item.geo.longitude &&
-        filter.appraisedPrice.min <= item.appraisedPrice / 10_000 &&
-        filter.appraisedPrice.max >= item.appraisedPrice / 10_000 &&
-        filter.lowPrice.min <= item.lowPrice / 10_000 &&
-        filter.lowPrice.max >= item.lowPrice / 10_000 &&
-        filter.pricePerArea.min <= pricePerArea / 10_000 &&
-        filter.pricePerArea.max >= pricePerArea / 10_000
-
-      marker.setMap(isVisible ? kakaoMap : null)
+    const items = await MapItemDataSource.read({
+      filter,
+      viewport: {
+        startLatitude: bounds.getSouthWest().getLat(),
+        endLatitude: bounds.getNorthEast().getLat(),
+        startLongitude: bounds.getSouthWest().getLng(),
+        endLongitude: bounds.getNorthEast().getLng(),
+      },
     })
+
+    items.forEach((item) => draw(kakaoMap, item))
+    clear(items.map((item) => item.editionNo))
+  }
+
+  return {
+    draw,
+    clear,
+    update,
   }
 })()
 
 export const MapUtils = {
   getKakaoMapLibrary,
   createKakaoMap,
-  updateMarker,
+  updateMarker: marker.update,
 }
