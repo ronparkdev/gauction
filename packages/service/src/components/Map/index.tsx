@@ -6,20 +6,26 @@ import { useRecoilState } from 'recoil'
 import { KakaoMapConstants } from 'share/constants/KakaoMap'
 
 import { FilterRangeState, filterRangeState } from 'service/stores/atoms/filterState'
+import { selectedKeyState } from 'service/stores/atoms/state'
 import pipeHOC from 'service/utils/hoc/pipeHOC'
 import { styling, StylingProps } from 'service/utils/hoc/styling'
 
+import { MapUtil } from './mapUtil'
+import { useMapMarker } from './markerHook'
 import { MapState } from './state'
-import { MapUtils } from './utils'
+import { Tooltip } from './Tooltip'
 
 interface OwnProps extends ScriptLoaderProps, StylingProps {}
 
 const Map: React.FC<OwnProps> = ({ cx, scriptsLoadedSuccessfully }: OwnProps) => {
   const [filter] = useRecoilState(filterRangeState)
+  const [selectedKey] = useRecoilState(selectedKeyState)
 
   const filterRef = useRef<FilterRangeState>(filter)
   const ref = useRef<HTMLDivElement>(null)
   const mapRef = useRef<any>(null)
+
+  const { updateMarker } = useMapMarker(mapRef)
 
   const writeStateWithThrottle = useCallback(() => {
     const map = mapRef.current
@@ -36,12 +42,9 @@ const Map: React.FC<OwnProps> = ({ cx, scriptsLoadedSuccessfully }: OwnProps) =>
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const updateMarkerWithThrottle = useCallback(
     throttle(() => {
-      const map = mapRef.current
-      if (map) {
-        MapUtils.updateMarker(map, filterRef.current)
-      }
+      updateMarker(filterRef.current)
     }, 100),
-    [mapRef],
+    [updateMarker],
   )
 
   useEffect(() => {
@@ -52,13 +55,13 @@ const Map: React.FC<OwnProps> = ({ cx, scriptsLoadedSuccessfully }: OwnProps) =>
   useEffect(() => {
     const container = ref.current
     if (container && scriptsLoadedSuccessfully) {
-      MapUtils.getKakaoMapLibrary().load()
+      MapUtil.getKakaoMapLibrary().load()
 
       const timerId = setTimeout(() => {
-        const map = MapUtils.createKakaoMap(container)
+        const map = MapUtil.createKakaoMap(container)
         mapRef.current = map
 
-        const KakaoMap = MapUtils.getKakaoMapLibrary()
+        const KakaoMap = MapUtil.getKakaoMapLibrary()
         KakaoMap.event.addListener(map, 'center_changed', function () {
           writeStateWithThrottle()
         })
@@ -76,7 +79,12 @@ const Map: React.FC<OwnProps> = ({ cx, scriptsLoadedSuccessfully }: OwnProps) =>
     }
   }, [ref, mapRef, scriptsLoadedSuccessfully, writeStateWithThrottle, updateMarkerWithThrottle])
 
-  return <div className={cx('map')} ref={ref} />
+  return (
+    <>
+      <div className={cx('map')} ref={ref} />
+      {selectedKey && <Tooltip targetKey={selectedKey} />}
+    </>
+  )
 }
 
 export default pipeHOC(
