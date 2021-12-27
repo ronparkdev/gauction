@@ -6,7 +6,6 @@ import { useRecoilState } from 'recoil'
 import { KakaoMapConstants } from 'share/constants/KakaoMap'
 
 import { FilterRangeState, filterRangeState } from 'service/stores/atoms/filterState'
-import { selectedKeyState } from 'service/stores/atoms/state'
 import pipeHOC from 'service/utils/hoc/pipeHOC'
 import { styling, StylingProps } from 'service/utils/hoc/styling'
 
@@ -19,7 +18,6 @@ interface OwnProps extends ScriptLoaderProps, StylingProps {}
 
 const Map: React.FC<OwnProps> = ({ cx, scriptsLoadedSuccessfully }: OwnProps) => {
   const [filter] = useRecoilState(filterRangeState)
-  const [selectedKey] = useRecoilState(selectedKeyState)
 
   const filterRef = useRef<FilterRangeState>(filter)
   const ref = useRef<HTMLDivElement>(null)
@@ -82,7 +80,7 @@ const Map: React.FC<OwnProps> = ({ cx, scriptsLoadedSuccessfully }: OwnProps) =>
   return (
     <>
       <div className={cx('map')} ref={ref} />
-      {selectedKey && <Tooltip targetKey={selectedKey} />}
+      <Tooltip />
     </>
   )
 }

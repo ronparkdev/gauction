@@ -1,15 +1,20 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import { useRecoilState } from 'recoil'
 
-interface Props {
-  targetKey: string
-}
+import { selectedListItemState } from 'service/stores/atoms/select'
 
-export const Tooltip: React.FC<Props> = ({ targetKey }: Props) => {
-  const modalRoot = document.getElementById(`map-info-${targetKey}`)
+export const Tooltip = () => {
+  const [selectedItem] = useRecoilState(selectedListItemState)
+
+  if (!selectedItem) {
+    return null
+  }
+
+  const modalRoot = document.getElementById(`map-info-${selectedItem.editionNo}`)
   if (!modalRoot) {
     return null
   }
 
-  return ReactDOM.createPortal(<div>hello {targetKey}</div>, modalRoot)
+  return ReactDOM.createPortal(<div>hello {JSON.stringify(selectedItem)}</div>, modalRoot)
 }

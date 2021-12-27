@@ -6,14 +6,14 @@ import { ListItem } from 'share/types/listItem'
 
 import MapItemDataSource from 'service/datasources/mapItem'
 import { FilterRangeState } from 'service/stores/atoms/filterState'
-import { selectedKeyState } from 'service/stores/atoms/state'
+import { selectedListItemState } from 'service/stores/atoms/select'
 
 import { MapUtil } from './mapUtil'
 
 export const useMapMarker = (kakaoMapRef: React.MutableRefObject<any>) => {
   const infoWindowMapRef = useRef<{ [key in string]: any }>({})
   const markerMapRef = useRef<{ [key in string]: any }>({})
-  const setSelectedKey = useSetRecoilState(selectedKeyState)
+  const setSelectedListItem = useSetRecoilState(selectedListItemState)
 
   const createInfoWindow = useCallback((key: string) => {
     const KakaoMap = MapUtil.getKakaoMapLibrary()
@@ -42,20 +42,20 @@ export const useMapMarker = (kakaoMapRef: React.MutableRefObject<any>) => {
 
       KakaoMap.event.addListener(marker, 'mouseover', () => {
         getOrCreateInfoWindow(item.editionNo).open(kakaoMapRef.current, marker)
-        setSelectedKey(item.editionNo)
+        setSelectedListItem(item)
       })
 
       // 마커에 마우스아웃 이벤트를 등록합니다
       KakaoMap.event.addListener(marker, 'mouseout', () => {
         getOrCreateInfoWindow(item.editionNo).close()
-        setSelectedKey((oldKey) => (oldKey === item.editionNo ? null : oldKey))
+        setSelectedListItem((oldItem) => (oldItem?.editionNo === item.editionNo ? null : oldItem))
       })
 
       markerMapRef.current[item.editionNo] = marker
 
       return marker
     },
-    [kakaoMapRef, getOrCreateInfoWindow, setSelectedKey],
+    [kakaoMapRef, getOrCreateInfoWindow, setSelectedListItem],
   )
 
   const updateMarker = useCallback(
