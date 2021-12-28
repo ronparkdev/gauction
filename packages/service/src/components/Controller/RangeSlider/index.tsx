@@ -1,4 +1,5 @@
-import { Label, RangeSlider as BPJRangeSlider } from '@blueprintjs/core'
+import { Slider } from '@mui/material'
+import Typography from '@mui/material/Typography'
 import React, { ReactNode, useCallback, useMemo } from 'react'
 import { useRecoilState } from 'recoil'
 
@@ -25,7 +26,7 @@ const RangeSlider = ({ cx, title, titleRight, stepSize, filterKey }: OwnProps) =
   }, [range, rangeLimit])
 
   const handleChangeValue = useCallback(
-    ([min, max]) => {
+    (event, [min, max]) => {
       const adjustedMin = Math.max(rangeLimit.min, min - (min % stepSize))
       const adjustedMax =
         max > rangeLimit.max
@@ -41,26 +42,26 @@ const RangeSlider = ({ cx, title, titleRight, stepSize, filterKey }: OwnProps) =
   )
 
   return (
-    <Label>
-      <div className={cx('title')}>
-        <div>{title}</div>
-        <div>{titleRight}</div>
-      </div>
-      <BPJRangeSlider
+    <>
+      <Typography id="track-inverted-slider" gutterBottom>
+        {title}
+      </Typography>
+      {titleRight}
+      <Slider
         min={rangeLimit.min}
         max={rangeLimit.max + 1}
-        labelRenderer={(value) => {
+        valueLabelFormat={(value) => {
           if (rangeLimit.max < value) {
             return '∞'
           }
           return StringUtils.getReadablePrice(value)
         }}
         value={value}
+        valueLabelDisplay="auto"
         onChange={handleChangeValue}
-        labelStepSize={rangeLimit.max - rangeLimit.min}
-        stepSize={stepSize}
+        step={stepSize}
       />
-    </Label>
+    </>
   )
 }
 
