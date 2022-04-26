@@ -1,10 +1,20 @@
 /* eslint-disable no-unused-vars */
 import * as UUID from 'uuid'
 
-import mapData from 'share/data/tank-20211213.json'
+// import mapData from 'share/data/tank-20220410.json'
 import { ListItem } from 'share/types/listItem'
 
 import { FilterRangeState } from 'service/stores/atoms/filterState'
+
+const mapData = (() => {
+  const now = new Date()
+  const dateStr = [now.getFullYear(), now.getMonth() + 1, now.getDate()]
+    .map(String)
+    .map((s) => s.padStart(2, '0'))
+    .join('')
+
+  return require(`share/data/tank-${dateStr}.json`) as ItemMap
+})()
 
 const MapItemWorker = require('./mapItem.worker.cjs').default
 
