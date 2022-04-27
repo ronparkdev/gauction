@@ -20,18 +20,36 @@ export const Tooltip = () => {
     const lowPrice = StringUtils.getReadablePrice(selectedItem.lowPrice)
     const percentOfAppraisedPrice =
       selectedItem.appraisedPrice && `(${Math.floor((selectedItem.lowPrice / selectedItem.appraisedPrice) * 100)}%)`
-    const groundSize = `${Math.floor(SizeUnit.convert(sizeUnit, selectedItem.groundSize))}${SizeUnit.getName(sizeUnit)}`
-    const pricePerGroundSize = StringUtils.getReadablePrice(
+    const groundSize = `${Math.floor(SizeUnit.convert(sizeUnit, selectedItem.groundSize))}${SizeUnit.getName(
+      sizeUnit,
+    )} (${SizeUnit.getName(sizeUnit)}당 ${StringUtils.getReadablePrice(
       Math.floor(selectedItem.lowPrice / SizeUnit.convert(sizeUnit, selectedItem.groundSize)),
-    )
+    )})`
+    const buildingSize =
+      selectedItem.buildingSize > 0
+        ? `${Math.floor(SizeUnit.convert(sizeUnit, selectedItem.buildingSize))}${SizeUnit.getName(
+            sizeUnit,
+          )}  (${SizeUnit.getName(sizeUnit)}당 ${StringUtils.getReadablePrice(
+            Math.floor(selectedItem.lowPrice / SizeUnit.convert(sizeUnit, selectedItem.buildingSize)),
+          )})`
+        : ''
 
-    return {
+    const data = {
       감정가: appraisedPrice,
       현재가: [lowPrice, percentOfAppraisedPrice].filter((str) => !!str).join(' '),
-      토지크기: groundSize,
-      [`${SizeUnit.getName(sizeUnit)}단가`]: pricePerGroundSize,
+      대지권: groundSize,
+      건물면적: buildingSize,
+      물건종류: selectedItem.productType,
       // RAW: JSON.stringify(selectedItem),
     }
+
+    return Object.keys(data).reduce((filteredData, key) => {
+      if (!!data[key]) {
+        return { ...filteredData, [key]: data[key] }
+      } else {
+        return filteredData
+      }
+    }, {})
   }, [selectedItem, sizeUnit])
 
   if (!selectedItem || !tableData) {
