@@ -54,7 +54,7 @@ const RangeSlider = ({ cx, title, titleRight, stepSize, filterKey }: OwnProps) =
           if (rangeLimit.max < value) {
             return '∞'
           }
-          return StringUtils.getReadablePrice(value)
+          return StringUtils.getReadablePrice(value * 10_000)
         }}
         value={value}
         valueLabelDisplay="auto"
