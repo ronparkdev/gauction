@@ -51,6 +51,10 @@ export const useMapMarker = (kakaoMapRef: React.MutableRefObject<any>) => {
         setSelectedListItem((oldItem) => (oldItem?.editionNo === item.editionNo ? null : oldItem))
       })
 
+      KakaoMap.event.addListener(marker, 'click', () => {
+        window.open(`https://auction1.land.naver.com/auction/ca_view.php?product_id=${item.id}`)
+      })
+
       markerMapRef.current[item.editionNo] = marker
 
       return marker
