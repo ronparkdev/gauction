@@ -13,7 +13,8 @@ const mapData = (() => {
     .map((s) => s.padStart(2, '0'))
     .join('')
 
-  return require(`share/data/tank-${dateStr}.json`) as ItemMap
+  // return require(`share/data/tank-${dateStr}.json`) as ItemMap
+  return require(`share/data/naver-${dateStr}.json`) as ItemMap
 })()
 
 const MapItemWorker = require('./mapItem.worker.cjs').default

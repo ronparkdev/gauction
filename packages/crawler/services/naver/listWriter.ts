@@ -9,7 +9,7 @@ import { getGeo } from '../kakaoMap/geocoderAPI'
 import { createListReceiver } from './listAPI'
 
 export const writeList = async () => {
-  const filePath = `../share/data/${moment().format('YYYYMMDD')}.json`
+  const filePath = `../share/data/naver-${moment().format('YYYYMMDD')}.json`
 
   const itemMap: { [key: string]: ListItem } = (await fs.pathExists(filePath)) ? await fs.readJson(filePath) : {}
 
@@ -36,15 +36,27 @@ export const writeList = async () => {
     await writeItemMap()
   }
 
+  let cnt = 0
+
   for (const key of Object.keys(itemMap)) {
     const item = itemMap[key]
-    if (!item && !item.geo) {
-      return
+    if (!item) {
+      continue
+    }
+
+    if (item.geo) {
+      continue
     }
 
     const geo = await getGeo(item.address)
     item.geo = geo
     itemMap[key] = item
+
+    cnt += 1
+    if (cnt % 100 === 0) {
+      console.log(`geo ${cnt} cnt`)
+      await writeItemMap()
+    }
   }
 
   await writeItemMap()
