@@ -26,6 +26,7 @@ const getDB = (() => {
 
     // eslint-disable-next-line new-cap
     const db = await Low(adapter)
+    await db.read()
     await db.defaults(DEFAULT_MODEL).write()
     cachedDB = db
     return db

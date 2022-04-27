@@ -5,7 +5,7 @@ import { ListItem } from 'share/types/listItem'
 import { SiType } from 'share/types/siType'
 import { PromiseUtil } from 'share/utils/promise'
 
-import { getCachedGeo } from '../kakaoMap/geocoderAPI'
+import { getCachedGeo, getRegularizedAddress } from '../kakaoMap/geocoderAPI'
 import { createListReceiver } from './listAPI'
 
 export const writeList = async () => {
@@ -37,6 +37,7 @@ export const writeList = async () => {
   }
 
   const keys = Object.keys(itemMap)
+  let modified = false
   for (let i = 0; i < keys.length; i++) {
     const key = keys[i]
     const item = itemMap[key]
@@ -45,14 +46,19 @@ export const writeList = async () => {
     }
 
     if (!item.geo) {
-      const geo = await getCachedGeo(item.address)
+      const regularizedAddress = getRegularizedAddress(item.address)
+      const geo = await getCachedGeo(regularizedAddress)
       item.geo = geo
       itemMap[key] = item
+      modified = true
     }
 
     if (i % 100 === 0) {
       console.log(`Geo 수집중... (${i} / ${keys.length})`)
-      await writeItemMap()
+      if (modified) {
+        await writeItemMap()
+        modified = false
+      }
     }
   }
 
