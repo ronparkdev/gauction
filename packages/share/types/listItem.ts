@@ -6,7 +6,8 @@ export interface ListItem {
   lowPrice: number // 최저 입찰가
   productType: string // 물건 타입 ex: 대지
   address: string // 주소
-  groundSize: number // 토지 크기 (㎡)
+  groundSize: number // 대지권 (㎡)
+  buildingSize: number // 건물면젹 (㎡)
   createdDate: number // 최초 등록일
   startDate: number // 시작일
   endDate: number // 종료일
