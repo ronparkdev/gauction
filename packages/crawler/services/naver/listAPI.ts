@@ -77,6 +77,7 @@ export const createListReceiver = (siType: SiType) => {
           const groundSize = Number(/(토지)[^\d]*(([\d.]*)㎡)/g.exec(item.lbarea)?.[3] || 0)
 
           return {
+            id: item.pid,
             editionNo: item.eno,
             productNo: item.pno,
             appraisedPrice: strToNum(item.jprice),
@@ -87,6 +88,7 @@ export const createListReceiver = (siType: SiType) => {
             createdDate: new Date().getDate(),
             startDate: 0,
             endDate: moment(item.ndate, 'YYYY.MM.DD<BR>HH.mm').toDate().getTime(),
+            imageUrl: null,
             geo: null,
           }
         }),

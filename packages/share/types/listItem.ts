@@ -1,4 +1,5 @@
 export interface ListItem {
+  id?: string //
   editionNo: string // 사건번호
   productNo: string // 물번
   appraisedPrice: number | null // 감정가
