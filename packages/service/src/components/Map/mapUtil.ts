@@ -24,6 +24,8 @@ const createKakaoMap = (container) => {
   const zoomControl = new KakaoMap.ZoomControl()
   map.addControl(zoomControl, KakaoMap.ControlPosition.RIGHT)
 
+  map.addOverlayMapTypeId(KakaoMap.MapTypeId.USE_DISTRICT)
+
   MapItemDataSource.load()
 
   return map
