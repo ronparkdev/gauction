@@ -22,7 +22,7 @@ const Controller: React.FC<OwnProps> = ({ cx }: OwnProps) => {
       <CostRangeSlider
         title={`${SizeUnit.getName(sizeUnit)}당 단가`}
         filterKey={'pricePerArea'}
-        stepSize={10}
+        stepSize={1}
         titleRight={<SizeUnitSwitch />}
       />
       <ProductTypeSelector />

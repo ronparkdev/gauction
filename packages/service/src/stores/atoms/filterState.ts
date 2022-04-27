@@ -25,7 +25,7 @@ export const getDefaultFilterRange = (filterKey: keyof FilterRangeState): Range 
     case 'pricePerArea':
       return {
         min: 1,
-        max: 1_000,
+        max: 200,
       }
   }
 }
