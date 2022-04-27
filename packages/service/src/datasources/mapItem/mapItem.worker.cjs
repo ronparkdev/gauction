@@ -7,7 +7,6 @@ const makeResult = (type, request) => {
         map[key] = { ...request[key], key }
         return map
       }, {})
-      console.log(itemMap)
       return
     }
     case 'READ': {
@@ -38,8 +37,6 @@ const makeResult = (type, request) => {
 
           const includePricePerArea =
             filter.pricePerAreaRange.min <= pricePerArea / 10000 && filter.pricePerAreaRange.max >= pricePerArea / 10000
-
-          console.log(filter)
 
           const includeProductType = filter.productTypes.includes(item.productType)
 
