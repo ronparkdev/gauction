@@ -3,31 +3,37 @@ import { MultiSelect } from '@blueprintjs/select'
 import React, { useCallback } from 'react'
 import { useRecoilState } from 'recoil'
 
-import { filterProductTypesState } from 'service/stores/atoms/filterState'
+import { filterState } from 'service/stores/atoms/filterState'
 import { PRODUCT_TYPES } from 'service/types/productType'
 import { styling, StylingProps } from 'service/utils/hoc/styling'
 
 type Props = StylingProps
 
 const ProductTypeSelector = ({ cx }: Props) => {
-  const [productTypes, setProductTypes] = useRecoilState(filterProductTypesState)
+  const [filter, setFilter] = useRecoilState(filterState)
 
   const handleRemove = useCallback(
     (type: string) => {
-      setProductTypes((productTypes) => productTypes.filter((productType) => type != productType))
+      setFilter((filter) => {
+        return { ...filter, productTypes: filter.productTypes.filter((productType) => type != productType) }
+      })
     },
-    [setProductTypes],
+    [setFilter],
   )
 
   const handleToggle = useCallback(
     (type: string) => {
-      setProductTypes((productTypes) =>
-        productTypes.includes(type)
-          ? productTypes.filter((productType) => productType !== type)
-          : [...productTypes, type],
-      )
+      setFilter((filter) => {
+        const included = filter.productTypes.includes(type)
+        return {
+          ...filter,
+          productTypes: included
+            ? filter.productTypes.filter((productType) => productType !== type)
+            : [...filter.productTypes, type],
+        }
+      })
     },
-    [setProductTypes],
+    [setFilter],
   )
 
   return (
@@ -36,17 +42,26 @@ const ProductTypeSelector = ({ cx }: Props) => {
       <MultiSelect
         items={PRODUCT_TYPES}
         popoverProps={{ popoverClassName: cx('popover') }}
-        selectedItems={productTypes}
-        tagRenderer={(t) => t}
-        itemRenderer={(productType) => (
-          <MenuItem
-            active={productTypes.includes(productType)}
-            key={productType}
-            text={productType}
-            onClick={() => handleToggle(productType)}
-          />
-        )}
-        onItemSelect={(t) => alert(t)}
+        selectedItems={filter.productTypes}
+        tagRenderer={(item) => item}
+        itemsEqual={(item1, item2) => item1 === item2}
+        itemPredicate={(query, item) => item.includes(query)}
+        itemRenderer={(productType, { modifiers, handleClick }) => {
+          if (!modifiers.matchesPredicate) {
+            return null
+          }
+          return (
+            <MenuItem
+              selected={modifiers.active}
+              icon={filter.productTypes.includes(productType) ? 'tick' : 'blank'}
+              key={productType}
+              text={productType}
+              onClick={() => handleToggle(productType)}
+            />
+          )
+        }}
+        noResults={<MenuItem disabled={true} text="No results." />}
+        onItemSelect={(productType) => handleToggle(productType)}
         onRemove={handleRemove}
       />
     </>

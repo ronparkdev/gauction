@@ -5,7 +5,7 @@ import { useRecoilState } from 'recoil'
 
 import { KakaoMapConstants } from 'share/constants/KakaoMap'
 
-import { FilterRangeState, filterRangeState } from 'service/stores/atoms/filterState'
+import { FilterState, filterState } from 'service/stores/atoms/filterState'
 import pipeHOC from 'service/utils/hoc/pipeHOC'
 import { styling, StylingProps } from 'service/utils/hoc/styling'
 
@@ -17,9 +17,9 @@ import { Tooltip } from './Tooltip'
 interface OwnProps extends ScriptLoaderProps, StylingProps {}
 
 const Map: React.FC<OwnProps> = ({ cx, scriptsLoadedSuccessfully }: OwnProps) => {
-  const [filter] = useRecoilState(filterRangeState)
+  const [filter] = useRecoilState(filterState)
 
-  const filterRef = useRef<FilterRangeState>(filter)
+  const filterRef = useRef<FilterState>(filter)
   const ref = useRef<HTMLDivElement>(null)
   const mapRef = useRef<any>(null)
 

@@ -1,6 +1,6 @@
 import { DefaultValue, RecoilState, selector } from 'recoil'
 
-import { filterRangeState, FilterRangeState } from 'service/stores/atoms/filterState'
+import { FilterRangeState, filterState } from 'service/stores/atoms/filterState'
 import { Range } from 'service/types/range'
 
 export const filterRangeStateSelector = (() => {
@@ -9,11 +9,11 @@ export const filterRangeStateSelector = (() => {
     const sel =
       selectorMap[filterKey] ||
       selector<Range>({
-        key: `selectedFilterRangeState_${filterKey}`,
-        get: ({ get }) => get(filterRangeState)[filterKey],
+        key: `selectedFilterState_${filterKey}`,
+        get: ({ get }) => get(filterState)[filterKey],
         set: ({ set, get }, newValue) => {
           if (!(newValue instanceof DefaultValue)) {
-            set(filterRangeState, { ...get(filterRangeState), [filterKey]: newValue })
+            set(filterState, { ...get(filterState), [filterKey]: newValue })
           }
         },
       })

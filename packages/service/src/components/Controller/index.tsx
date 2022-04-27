@@ -17,11 +17,11 @@ const Controller: React.FC<OwnProps> = ({ cx }: OwnProps) => {
 
   return (
     <div className={cx('root')}>
-      <CostRangeSlider title={'감정 금액'} filterKey={'appraisedPrice'} stepSize={100} />
-      <CostRangeSlider title={'현재 금액'} filterKey={'lowPrice'} stepSize={100} />
+      <CostRangeSlider title={'감정 금액'} filterKey={'appraisedPriceRange'} stepSize={100} />
+      <CostRangeSlider title={'현재 금액'} filterKey={'lowPriceRange'} stepSize={100} />
       <CostRangeSlider
         title={`${SizeUnit.getName(sizeUnit)}당 단가`}
-        filterKey={'pricePerArea'}
+        filterKey={'pricePerAreaRange'}
         stepSize={1}
         titleRight={<SizeUnitSwitch />}
       />

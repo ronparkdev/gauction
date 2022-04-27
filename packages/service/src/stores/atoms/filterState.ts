@@ -4,25 +4,29 @@ import { PRODUCT_TYPES } from 'service/types/productType'
 import { Range } from 'service/types/range'
 import { localForageEffect } from 'service/utils/recoil-effect/localForage'
 
+export type FilterState = FilterRangeState & {
+  productTypes: string[]
+}
+
 export interface FilterRangeState {
-  appraisedPrice: Range
-  lowPrice: Range
-  pricePerArea: Range
+  appraisedPriceRange: Range
+  lowPriceRange: Range
+  pricePerAreaRange: Range
 }
 
 export const getDefaultFilterRange = (filterKey: keyof FilterRangeState): Range => {
   switch (filterKey) {
-    case 'appraisedPrice':
+    case 'appraisedPriceRange':
       return {
         min: 100,
         max: 300_000,
       }
-    case 'lowPrice':
+    case 'lowPriceRange':
       return {
         min: 100,
         max: 100_000,
       }
-    case 'pricePerArea':
+    case 'pricePerAreaRange':
       return {
         min: 1,
         max: 200,
@@ -30,18 +34,13 @@ export const getDefaultFilterRange = (filterKey: keyof FilterRangeState): Range 
   }
 }
 
-export const filterRangeState = atom<FilterRangeState>({
-  key: 'filterRangeState',
+export const filterState = atom<FilterState>({
+  key: 'filterState',
   default: {
-    appraisedPrice: getDefaultFilterRange('appraisedPrice'),
-    lowPrice: getDefaultFilterRange('lowPrice'),
-    pricePerArea: getDefaultFilterRange('pricePerArea'),
+    appraisedPriceRange: getDefaultFilterRange('appraisedPriceRange'),
+    lowPriceRange: getDefaultFilterRange('lowPriceRange'),
+    pricePerAreaRange: getDefaultFilterRange('pricePerAreaRange'),
+    productTypes: PRODUCT_TYPES,
   },
-  effects_UNSTABLE: [localForageEffect('filterRangeState')],
-})
-
-export const filterProductTypesState = atom<string[]>({
-  key: 'filterProductTypesState',
-  default: PRODUCT_TYPES,
-  effects_UNSTABLE: [localForageEffect('filterProductTypesState')],
+  effects_UNSTABLE: [localForageEffect('filterState')],
 })

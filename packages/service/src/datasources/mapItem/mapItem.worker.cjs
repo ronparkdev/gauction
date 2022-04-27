@@ -30,16 +30,22 @@ const makeResult = (type, request) => {
 
           const includeAppraisedPrice =
             !item.appraisedPrice ||
-            (filter.appraisedPrice.min <= item.appraisedPrice / 10000 &&
-              filter.appraisedPrice.max >= item.appraisedPrice / 10000)
+            (filter.appraisedPriceRange.min <= item.appraisedPrice / 10000 &&
+              filter.appraisedPriceRange.max >= item.appraisedPrice / 10000)
 
           const includeLowPrice =
-            filter.lowPrice.min <= item.lowPrice / 10000 && filter.lowPrice.max >= item.lowPrice / 10000
+            filter.lowPriceRange.min <= item.lowPrice / 10000 && filter.lowPriceRange.max >= item.lowPrice / 10000
 
           const includePricePerArea =
-            filter.pricePerArea.min <= pricePerArea / 10000 && filter.pricePerArea.max >= pricePerArea / 10000
+            filter.pricePerAreaRange.min <= pricePerArea / 10000 && filter.pricePerAreaRange.max >= pricePerArea / 10000
 
-          return isInsideViewport && includeAppraisedPrice && includeLowPrice && includePricePerArea
+          console.log(filter)
+
+          const includeProductType = filter.productTypes.includes(item.productType)
+
+          return (
+            isInsideViewport && includeAppraisedPrice && includeLowPrice && includePricePerArea && includeProductType
+          )
         })
         .map((item) => {
           const x = centerLatitude - item.geo.latitude

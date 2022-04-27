@@ -4,7 +4,7 @@ import * as UUID from 'uuid'
 // import mapData from 'share/data/tank-20220410.json'
 import { ListItem } from 'share/types/listItem'
 
-import { FilterRangeState } from 'service/stores/atoms/filterState'
+import { FilterState } from 'service/stores/atoms/filterState'
 
 const mapData = (() => {
   const now = new Date()
@@ -72,7 +72,7 @@ interface MapViewport {
 
 interface ReadRequest {
   viewport: MapViewport
-  filter: FilterRangeState
+  filter: FilterState
 }
 
 const read = async (request: ReadRequest): Promise<ListItem[]> => await sendMessage('READ', request)

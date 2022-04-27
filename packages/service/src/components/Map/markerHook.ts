@@ -5,7 +5,7 @@ import { useSetRecoilState } from 'recoil'
 import { ListItem } from 'share/types/listItem'
 
 import MapItemDataSource from 'service/datasources/mapItem'
-import { FilterRangeState } from 'service/stores/atoms/filterState'
+import { FilterState } from 'service/stores/atoms/filterState'
 import { selectedListItemState } from 'service/stores/atoms/select'
 
 import { MapUtil } from './mapUtil'
@@ -63,7 +63,7 @@ export const useMapMarker = (kakaoMapRef: React.MutableRefObject<any>) => {
   )
 
   const updateMarker = useCallback(
-    async (filter: FilterRangeState) => {
+    async (filter: FilterState) => {
       const kakaoMap = kakaoMapRef.current
       if (!kakaoMap) {
         return

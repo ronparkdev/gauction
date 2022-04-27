@@ -51,7 +51,7 @@ const App = ({ cx }: OwnProps) => {
           <Map />
         </Stack>
       </Box>
-      <Box component="aside" sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}>
+      <Box component="aside" sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }} style={{ zIndex: 0 }}>
         <Drawer
           container={container}
           variant="temporary"
