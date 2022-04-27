@@ -15,7 +15,10 @@ const API_URL = 'http://goodauction.land.naver.com/auction/ax_list.php'
 const API_REFERER = 'https://goodauction.land.naver.com/auction/ca_list.php'
 
 const generateParams = (siType: SiType, startOffset: number) => ({
-  class1: [2, 3, 9, 10, 11, 12, 33, 14, 7, 24, 34, 35, 36, 37, 40, 41, 42, 45, 46, 47, 48, 49, 50].join(','),
+  class1: [
+    1, 2, 32, 3, 4, 5, 8, 9, 10, 11, 12, 33, 14, 13, 27, 6, 7, 16, 30, 15, 18, 19, 20, 21, 22, 24, 26, 28, 34, 35, 36,
+    37, 40, 41, 42, 45, 46, 47, 48, 49, 50,
+  ].join(','),
   ju_price1: '',
   ju_price2: '',
   bi_price1: '',
@@ -74,7 +77,8 @@ export const createListReceiver = (siType: SiType) => {
         items.map((item: ListRawItem): ListItem => {
           const strToNum = (str) => Number(str.replace(/[^\d]/g, ''))
           const address = (/([^]*)(외[0-9]*필지)/g.exec(item.addr)?.[1] ?? item.addr).replace(',', '').trim()
-          const groundSize = Number(/(토지)[^\d]*(([\d.]*)㎡)/g.exec(item.lbarea)?.[3] || 0)
+          const groundSize = Number(/토지[^\d]+(([\d.]*)㎡)/g.exec(item.lbarea)?.[2] || 0)
+          const buildingSize = Number(/건물[^\d]+(([\d.]*)㎡)/g.exec(item.lbarea)?.[2] || 0)
 
           return {
             id: item.pid,
@@ -84,6 +88,7 @@ export const createListReceiver = (siType: SiType) => {
             address,
             lowPrice: strToNum(item.lprice),
             groundSize,
+            buildingSize,
             productType: item.ptype,
             createdDate: new Date().getDate(),
             startDate: 0,
