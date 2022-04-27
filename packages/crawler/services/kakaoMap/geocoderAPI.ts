@@ -3,7 +3,23 @@ import qs from 'qs'
 
 import { KakaoMapConstants } from 'share/constants/KakaoMap'
 
-export const getGeo = async (address: string): Promise<{ latitude: number; longitude: number }> => {
+import { readGeoCache, writeGeoCache } from '../database'
+
+export const getCachedGeo = async (address: string): Promise<{ latitude: number; longitude: number } | null> => {
+  const cached = await readGeoCache(address)
+  if (cached) {
+    return cached === 'FAILED' ? null : cached
+  }
+
+  const value = await getGeo(address)
+  if (value) {
+    writeGeoCache({ address, latitude: value.latitude, longitude: value.longitude })
+  }
+
+  return value
+}
+
+export const getGeo = async (address: string): Promise<{ latitude: number; longitude: number } | null> => {
   const params = { query: address, analyze_type: 'exact', page: 1, size: 1 }
 
   const result = await axios.get(
