@@ -14,6 +14,17 @@ namespace SizeUnit {
         return '평'
     }
   }
+
+  export const convert = (sizeUnit: string | SizeUnit, value: number) => {
+    switch (sizeUnit) {
+      case SizeUnit.SQUARE_METTER:
+        return value
+      case SizeUnit.PYEONG:
+        return value / 3.306
+      default:
+        return 0
+    }
+  }
 }
 
 export default SizeUnit
